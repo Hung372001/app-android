@@ -77,7 +77,7 @@ class ProductCard extends StatelessWidget {
                   // Product Brand
                   Text(
                     product.brand,
-                    style: Theme.of(context).textTheme.headlineLarge,
+                    style: Theme.of(context).textTheme.headlineSmall,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -89,10 +89,7 @@ class ProductCard extends StatelessWidget {
                       // Price
                       Text(
                         '${product.price.toStringAsFixed(0)}đ',
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          color: Theme.of(context).primaryColor,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context).textTheme.headlineSmall
                       ),
 
                       // Rating
@@ -105,7 +102,9 @@ class ProductCard extends StatelessWidget {
                           ),
                           Text(
                             product.rating.toStringAsFixed(1),
-                            style: Theme.of(context).textTheme.headlineLarge,
+                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                              fontSize: 12,
+                            ),
                           ),
                         ],
                       ),
@@ -114,55 +113,55 @@ class ProductCard extends StatelessWidget {
 
                   // Add to Cart Button
                   SizedBox(height: 8),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Add to cart logic
-                        final cartProvider = Provider.of<CartProvider>(
-                            context,
-                            listen: false
-                        );
-
-                        // Use first variant if available, else create a default
-                        final variant = product.variants.isNotEmpty
-                            ? product.variants.first
-                            : ProductVariant(
-                            id: '',
-                            name: 'Default',
-                            price: product.price,
-                            stock: 0
-                        );
-
-                        cartProvider.addToCart(
-                          product: product,
-                          variant: variant,
-                          quantity: 1,
-                        );
-
-                        // Show snackbar
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Added to cart'),
-                            action: SnackBarAction(
-                              label: 'View Cart',
-                              onPressed: () {
-                                // Navigate to cart screen
-                                Navigator.pushNamed(context, '/cart');
-                              },
-                            ),
-                          ),
-                        );
-                      },
-                      child: Text('Add to Cart'),
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 8),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                  ),
+                  // SizedBox(
+                  //   width: double.infinity,
+                  //   child: ElevatedButton(
+                  //     onPressed: () {
+                  //       // Add to cart logic
+                  //       final cartProvider = Provider.of<CartProvider>(
+                  //           context,
+                  //           listen: false
+                  //       );
+                  //
+                  //       // Use first variant if available, else create a default
+                  //       final variant = product.variants.isNotEmpty
+                  //           ? product.variants.first
+                  //           : ProductVariant(
+                  //           id: '',
+                  //           name: 'Default',
+                  //           price: product.price,
+                  //           stock: 0
+                  //       );
+                  //
+                  //       cartProvider.addToCart(
+                  //         product: product,
+                  //         variant: variant,
+                  //         quantity: 1,
+                  //       );
+                  //
+                  //       // Show snackbar
+                  //       ScaffoldMessenger.of(context).showSnackBar(
+                  //         SnackBar(
+                  //           content: Text('Added to cart'),
+                  //           action: SnackBarAction(
+                  //             label: 'View Cart',
+                  //             onPressed: () {
+                  //               // Navigate to cart screen
+                  //               Navigator.pushNamed(context, '/cart');
+                  //             },
+                  //           ),
+                  //         ),
+                  //       );
+                  //     },
+                  //     child: Text('Add to Cart'),
+                  //     style: ElevatedButton.styleFrom(
+                  //       padding: EdgeInsets.symmetric(vertical: 8),
+                  //       shape: RoundedRectangleBorder(
+                  //         borderRadius: BorderRadius.circular(8),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
             ),

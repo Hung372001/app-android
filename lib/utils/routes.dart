@@ -9,8 +9,10 @@ class Routes {
   static const String profile = '/profile';
   static const String productCatalog = '/product-catalog';
   static const String productDetails = '/product-details';
-  static const String cart = '/cart';
+  static const String cart = '/cart'; // Thêm route giỏ hàng
+  static const String categoryProducts = '/category-products';
 
+  // Admin Routes
   static const String adminDashboard = '/admin/dashboard';
   static const String adminProductList = '/admin/products';
   static const String adminProductAdd = '/admin/products/add';

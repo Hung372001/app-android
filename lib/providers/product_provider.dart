@@ -57,13 +57,14 @@ class ProductProvider with ChangeNotifier {
 
     try {
       final fetchedProducts = await _productService.fetchProducts(
-        page: _currentPage,
+        // page: _currentPage,
         filters: filters,
         sortBy: sortBy,
         searchQuery: searchQuery,
         limit: limit,
       );
 
+      print('Fetched ${fetchedProducts} products');
       // If filters contain a category, store in categorized products
       if (filters?.category != null) {
         _categorizedProducts[filters!.category!] = fetchedProducts;
@@ -101,7 +102,7 @@ class ProductProvider with ChangeNotifier {
 
     try {
       final newProducts = await _productService.fetchProducts(
-        page: _currentPage,
+        // page: _currentPage,
         filters: _currentFilters,
         sortBy: _currentSortOption,
         searchQuery: _currentSearchQuery,

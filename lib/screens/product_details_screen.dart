@@ -1,3 +1,4 @@
+// Chi tiết sản phẩm có thêm liên kết đến danh mục
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -6,6 +7,7 @@ import '../providers/product_provider.dart';
 import '../providers/cart_provider.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/product_review_item.dart';
+import '../screens/category_product_screen.dart'; // Import màn hình danh mục
 
 class ProductDetailsScreen extends StatefulWidget {
   final String productId;
@@ -178,9 +180,32 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         product.name,
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
-                      Text(
-                        product.brand,
-                        style: Theme.of(context).textTheme.headlineSmall,
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            product.brand,
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+
+                          // NEW: Add category chip that links to category page
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => CategoryProductScreen(
+                                    category: product.category,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Chip(
+                              label: Text(product.category),
+                              backgroundColor: Colors.blue.shade100,
+                            ),
+                          ),
+                        ],
                       ),
 
                       // Rating
@@ -201,79 +226,114 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
                       // Variants Dropdown
                       if (product.variants.length > 1)
-                        DropdownButton<ProductVariant>(
-                          value: _selectedVariant,
-                          items: product.variants.map((variant) {
-                            return DropdownMenuItem(
-                              value: variant,
-                              child: Text(variant.name),
-                            );
-                          }).toList(),
-                          onChanged: (variant) {
-                            setState(() {
-                              _selectedVariant = variant!;
-                            });
-                          },
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Variants:', style: TextStyle(fontWeight: FontWeight.bold)),
+                              DropdownButton<ProductVariant>(
+                                value: _selectedVariant,
+                                isExpanded: true,
+                                items: product.variants.map((variant) {
+                                  return DropdownMenuItem(
+                                    value: variant,
+                                    child: Text(
+                                      '${variant.name} - ${variant.price.toStringAsFixed(0)}đ',
+                                    ),
+                                  );
+                                }).toList(),
+                                onChanged: (variant) {
+                                  setState(() {
+                                    _selectedVariant = variant!;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
                         ),
 
                       // Description
-                      Text(
-                        'Description:',
-                        style: Theme.of(context).textTheme.headlineSmall,
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16.0),
+                        child: Text(
+                          'Description:',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
                       ),
-                      Text(
-                        product.description,
-                        style: Theme.of(context).textTheme.headlineMedium,
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(
+                          product.description,
+                          style: TextStyle(fontSize: 14),
+                        ),
                       ),
 
                       // Quantity Selector and Add to Cart
-                      Row(
-                        children: [
-                          Text('Quantity:'),
-                          IconButton(
-                            icon: Icon(Icons.remove),
-                            onPressed: () {
-                              if (_quantity > 1) {
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        child: Row(
+                          children: [
+                            Text('Quantity:'),
+                            IconButton(
+                              icon: Icon(Icons.remove, color: Colors.red),
+                              onPressed: () {
+                                if (_quantity > 1) {
+                                  setState(() {
+                                    _quantity--;
+                                  });
+                                }
+                              },
+                            ),
+                            Container(
+                              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                '$_quantity',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.add, color: Colors.green),
+                              onPressed: () {
                                 setState(() {
-                                  _quantity--;
+                                  _quantity++;
                                 });
-                              }
-                            },
-                          ),
-                          Text('$_quantity'),
-                          IconButton(
-                            icon: Icon(Icons.add),
-                            onPressed: () {
-                              setState(() {
-                                _quantity++;
-                              });
-                            },
-                          ),
-                          Spacer(),
-                          ElevatedButton(
-                            onPressed: () {
-                              final cartProvider = Provider.of<CartProvider>(context, listen: false);
-                              cartProvider.addToCart(
-                                product: product,
-                                variant: _selectedVariant,
-                                quantity: _quantity,
-                              );
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('Added to cart'),
-                                  action: SnackBarAction(
-                                    label: 'View Cart',
-                                    onPressed: () {
-                                      // Navigate to cart screen
-                                      Navigator.pushNamed(context, '/cart');
-                                    },
+                              },
+                            ),
+                            Spacer(),
+                            ElevatedButton.icon(
+                              icon: Icon(Icons.shopping_cart),
+                              label: Text('Add to Cart'),
+                              style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              ),
+                              onPressed: () {
+                                final cartProvider = Provider.of<CartProvider>(context, listen: false);
+                                cartProvider.addToCart(
+                                  product: product,
+                                  variant: _selectedVariant,
+                                  quantity: _quantity,
+                                );
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Added to cart'),
+                                    action: SnackBarAction(
+                                      label: 'View Cart',
+                                      onPressed: () {
+                                        // Navigate to cart screen
+                                        Navigator.pushNamed(context, '/cart');
+                                      },
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                            child: Text('Add to Cart'),
-                          ),
-                        ],
+                                );
+                              },
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -293,11 +353,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         children: [
                           Text(
                             'Customer Reviews',
-                            style: Theme.of(context).textTheme.headlineSmall,
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                           ),
-                          TextButton(
+                          TextButton.icon(
+                            icon: Icon(Icons.rate_review),
+                            label: Text('Write a Review'),
                             onPressed: () => _showReviewDialog(product),
-                            child: Text('Write a Review'),
                           ),
                         ],
                       ),
@@ -309,7 +370,20 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
                           if (reviews.isEmpty) {
                             return Center(
-                              child: Text('No reviews yet'),
+                              child: Padding(
+                                padding: const EdgeInsets.all(24.0),
+                                child: Column(
+                                  children: [
+                                    Icon(Icons.rate_review_outlined, size: 48, color: Colors.grey),
+                                    SizedBox(height: 16),
+                                    Text(
+                                      'No reviews yet. Be the first to review this product!',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(color: Colors.grey),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             );
                           }
 
@@ -327,6 +401,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   ),
                 ),
               ),
+
+              // Related Products section could be added here
             ],
           );
         },

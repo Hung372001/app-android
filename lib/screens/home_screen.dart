@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../models/product_model.dart'; // Import để sử dụng danh sách danh mục
 import '../providers/auth_provider.dart';
 import '../utils/routes.dart';
+import '../screens/category_product_screen.dart'; // Import màn hình hiển thị sản phẩm theo danh mục
 
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // Không yêu cầu login, không sử dụng authProvider.currentUser
     return Scaffold(
       appBar: AppBar(
         title: Text('E-Commerce Store'),
         actions: [
-          // Cart Icon
+          // Giỏ hàng
           IconButton(
             icon: Icon(Icons.shopping_cart),
             onPressed: () {
               Navigator.pushNamed(context, Routes.cart);
             },
           ),
-          // Profile Icon - Yêu cầu login
+          // Hồ sơ người dùng
           IconButton(
             icon: Icon(Icons.person),
             onPressed: () {
@@ -30,49 +31,56 @@ class HomeScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          // Danh mục sản phẩm
-          Expanded(
-            child: GridView.count(
-              crossAxisCount: 2,
+          // Tiêu đề danh mục
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildCategoryCard(
-                    context,
-                    'Laptops',
-                    Icons.laptop,
-                        () {
-                      Navigator.pushNamed(
-                        context,
-                        Routes.productCatalog,
-                        arguments: {'category': 'Laptops'},
-                      );
-                    }
+                Text(
+                  'Danh mục sản phẩm',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                _buildCategoryCard(
-                    context,
-                    'Monitors',
-                    Icons.desktop_windows,
-                        () {
-                      Navigator.pushNamed(
-                        context,
-                        Routes.productCatalog,
-                        arguments: {'category': 'Monitors'},
-                      );
-                    }
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, Routes.productCatalog);
+                  },
+                  child: Text('Xem tất cả'),
                 ),
-                _buildCategoryCard(
-                    context,
-                    'Graphics Cards',
-                    Icons.computer,
-                        () {
-                      Navigator.pushNamed(
-                        context,
-                        Routes.productCatalog,
-                        arguments: {'category': 'Graphics Cards'},
-                      );
-                    }
-                ),
-                // Thêm các danh mục khác
               ],
+            ),
+          ),
+
+          // Danh sách danh mục sản phẩm
+          Expanded(
+            child: GridView.builder(
+              padding: EdgeInsets.all(10),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 1.0,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+              ),
+              itemCount: Product.categories.length,
+              itemBuilder: (context, index) {
+                final category = Product.categories[index];
+                return _buildCategoryCard(
+                  context,
+                  category,
+                  _getCategoryIcon(category),
+                      () {
+                    // Điều hướng đến màn hình danh mục sản phẩm
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CategoryProductScreen(category: category),
+                      ),
+                    );
+                  },
+                );
+              },
             ),
           ),
         ],
@@ -82,15 +90,15 @@ class HomeScreen extends StatelessWidget {
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Home',
+            label: 'Trang chủ',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.shopping_bag),
-            label: 'Products',
+            label: 'Sản phẩm',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.shopping_cart),
-            label: 'Cart',
+            label: 'Giỏ hàng',
           ),
         ],
         onTap: (index) {
@@ -117,10 +125,14 @@ class HomeScreen extends StatelessWidget {
       IconData icon,
       VoidCallback onTap
       ) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Card(
-        elevation: 4,
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -132,11 +144,41 @@ class HomeScreen extends StatelessWidget {
             SizedBox(height: 10),
             Text(
               title,
-              style: Theme.of(context).textTheme.headlineMedium,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
       ),
     );
+  }
+
+  // Hàm để lấy icon phù hợp cho từng danh mục
+  IconData _getCategoryIcon(String category) {
+    switch (category) {
+      case 'Laptops':
+        return Icons.laptop;
+      case 'Monitors':
+        return Icons.desktop_windows;
+      case 'Hard Drives':
+        return Icons.storage;
+      case 'Processors':
+        return Icons.memory;
+      case 'Graphics Cards':
+        return Icons.videogame_asset;
+      case 'Motherboards':
+        return Icons.developer_board;
+      case 'RAM':
+        return Icons.memory;
+      case 'Power Supplies':
+        return Icons.power;
+      case 'Computer Cases':
+        return Icons.computer;
+      default:
+        return Icons.devices_other;
+    }
   }
 }

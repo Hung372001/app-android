@@ -16,6 +16,7 @@ import './screens/home_screen.dart';
 import './screens/profile_screen.dart';
 import './screens/product_catalog_screen.dart';
 import './screens/product_details_screen.dart';
+import './screens/cart_screen.dart'; // Thêm màn hình giỏ hàng
 // Import Admin Screens
 import './screens/admin/admin_dashboard_screen.dart';
 import './screens/admin/admin_product_list_screen.dart';
@@ -101,6 +102,7 @@ class MyApp extends StatelessWidget {
         Routes.home: (context) => HomeScreen(),
         Routes.profile: (context) => ProfileScreen(),
         Routes.productCatalog: (context) => ProductCatalogScreen(),
+        Routes.cart: (context) => CartScreen(), // Thêm route giỏ hàng
 
         // Admin Routes (Wrapped with AdminRouteGuard)
         Routes.adminDashboard: (context) => adminRouteWrapper(AdminDashboardScreen()),

@@ -30,7 +30,6 @@
 
     // Fetch products with pagination and filtering
     Future<List<Product>> fetchProducts({
-      int page = 1,
       int limit = 20,
       ProductFilterOptions? filters,
       String sortBy = ProductSortOptions.relevance,
@@ -38,9 +37,6 @@
     }) async {
       try {
         final queryParams = {
-          'page': page.toString(),
-          'limit': limit.toString(),
-          'sortBy': sortBy,
           if (searchQuery != null) 'search': searchQuery,
           if (filters?.category != null) 'category': filters!.category,
           if (filters?.minPrice != null) 'minPrice': filters!.minPrice.toString(),
@@ -55,6 +51,7 @@
 
         if (response.statusCode == 200) {
           final List<dynamic> productList = json.decode(response.body)['products'];
+          print('Fetched ${productList} products');
           return productList.map((product) => Product.fromJson(product)).toList();
         }
         return [];
@@ -73,7 +70,10 @@
         );
 
         if (response.statusCode == 200) {
-          return Product.fromJson(json.decode(response.body));
+
+          print('Fetched product details: ${response.body}');
+          return Product.fromJson(json.decode(response.body)['product']);
+
         }
         return null;
       } catch (e) {
