@@ -274,11 +274,12 @@ class CartScreen extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () {
                 // TODO: Chuyển đến màn hình thanh toán
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Checkout feature will be implemented soon!'),
-                  ),
-                );
+                Navigator.pushNamed(context, Routes.checkout);
+                // ScaffoldMessenger.of(context).showSnackBar(
+                //   SnackBar(
+                //     content: Text('Checkout feature will be implemented soon!'),
+                //   ),
+                // );
               },
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(vertical: 16),

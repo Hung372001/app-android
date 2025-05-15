@@ -41,9 +41,9 @@ class AdminDashboardScreen extends StatelessWidget {
             label: 'Order Management',
             onTap: () {
               // TODO: Implement Order Management Screen
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Order Management Coming Soon')),
-              );
+
+                  Navigator.pushNamed(context, Routes.adminCouponManagement);
+
             },
           ),
 
