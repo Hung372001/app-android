@@ -44,7 +44,7 @@ class OrderProvider with ChangeNotifier {
     required String customerPhone,
     required String shippingAddress,
     required String paymentMethod,
-    required List<CartItem> cartItems,
+    required List<OrderCartItem> cartItems,
     String? couponCode,
     required double discountAmount,
     required double shippingFee,
@@ -53,20 +53,20 @@ class OrderProvider with ChangeNotifier {
   }) async {
     // Check authentication
     final token = _authProvider.authToken;
-    if (token == null) {
+  /*  if (token == null) {
       throw Exception('You must be logged in to create an order');
-    }
+    }*/
 
     try {
       // Prepare order items from cart items
       final List<Map<String, dynamic>> orderItems = cartItems.map((item) {
         return {
-          'productId': item.product.id,
-          'productName': item.product.name,
-          'variantName': item.variant.name,
-          'price': item.variant.price,
+          'productId': item.productId,
+          'productName': item.productName,
+          'variantName': item.variantName,
+          'price': item.price,
           'quantity': item.quantity,
-          'imageUrl': item.product.imageUrls.isNotEmpty ? item.product.imageUrls.first : null,
+          'imageUrl': item.imageUrl,
         };
       }).toList();
 
@@ -114,6 +114,33 @@ class OrderProvider with ChangeNotifier {
     }
   }
 
+  Future<void> fetchOrder() async {
+
+
+    notifyListeners();
+
+    try {
+      final response = await http.get(
+        Uri.parse(baseUrl)
+
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+
+        final List<dynamic> couponList = responseData['orders'];
+        final List<Order> fetchedCoupons = couponList
+            .map((coupon) => Order.fromJson(coupon))
+            .toList();
+
+      } else {
+
+      }
+    } catch (e) {
+    } finally {
+      notifyListeners();
+    }
+  }
   // Validate a coupon code
   Future<CouponValidationResult> validateCoupon(String couponCode, double orderAmount) async {
     try {
@@ -167,58 +194,39 @@ class OrderProvider with ChangeNotifier {
   }
 
   // Get order history
-  Future<OrderHistoryResult> getOrderHistory({
-    String? status,
-    int page = 1,
-    int limit = 10,
-  }) async {
-    // Check authentication
-
-
+  Future<List<Order>> getOrderHistoryByEmail(String email) async {
     try {
-      // Prepare query parameters
-      final queryParams = {
-        'page': page.toString(),
-        'limit': limit.toString(),
+      // Get auth token if available
+      final token = _authProvider.authToken;
+
+      // Prepare headers
+      final headers = {
+        'Content-Type': 'application/json',
+        if (token != null) 'Authorization': 'Bearer $token',
       };
 
-      // Add status filter if provided
-      if (status != null && status != 'All') {
-        queryParams['status'] = status;
-      }
-
-      // Send API request
+      // Make API request with email parameter
       final response = await http.get(
-        Uri.parse(baseUrl).replace(queryParameters: queryParams),
-
+        Uri.parse('${AppConstants.baseUrl}/orders/$email').replace(
+            queryParameters: {'email': email}
+        ),
+        headers: headers,
       );
 
       if (response.statusCode == 200) {
-        // Parse successful response
         final responseData = json.decode(response.body);
+        final List<dynamic> ordersData = responseData['data'];
 
-        // Extract orders
-        final List<dynamic> ordersData = responseData['orders'];
-        final List<Order> orders = ordersData
-            .map((orderData) => Order.fromJson(orderData))
-            .toList();
-
-        // Extract pagination info
-        final int totalOrders = responseData['totalOrders'] ?? 0;
-        final bool hasMore = totalOrders > page * limit;
-
-        return OrderHistoryResult(
-          orders: orders,
-          hasMore: hasMore,
-        );
+print('Response data: $responseData');
+        // Convert JSON to Order objects
+        return ordersData.map((orderData) => Order.fromJson(orderData)).toList();
       } else {
-        // Handle API error
-        final errorData = json.decode(response.body);
-        throw Exception(errorData['message'] ?? 'Failed to load order history');
+        final responseData = json.decode(response.body);
+        throw Exception(responseData['error'] ?? 'Failed to get order history');
       }
     } catch (e) {
-      // Handle any other errors
-      throw Exception('Error loading order history: ${e.toString()}');
+      print('Error fetching order history: ${e.toString()}');
+      throw Exception('Failed to load order history: ${e.toString()}');
     }
   }
 

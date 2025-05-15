@@ -124,6 +124,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     try {
       // Create order
       const cartItems = [];
+      final orderCartItems = cartProvider.getOrderCartItems();
 
       final order = await orderProvider.createOrder(
         customerName: _nameController.text,
@@ -131,7 +132,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         customerPhone: _phoneController.text,
         shippingAddress: _addressController.text,
         paymentMethod: _selectedPaymentMethod,
-        cartItems: cartProvider.items,
+        cartItems: orderCartItems,
         couponCode: _isCouponValid ? _couponController.text : null,
         discountAmount: _discountAmount,
         shippingFee: cartProvider.calculateShippingFee(),

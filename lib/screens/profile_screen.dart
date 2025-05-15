@@ -81,6 +81,7 @@ class ProfileScreen extends StatelessWidget {
                   label: Text('My Orders'),
                   onPressed: () {
                     // TODO: Chuyển đến màn hình quản lý đơn hàng
+                    Navigator.pushNamed(context, Routes.orderHistory);
                   },
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: 12),

@@ -122,3 +122,35 @@ class Order {
     };
   }
 }
+
+class OrderCartItem {
+  final String productId;
+  final String productName;
+  final String? variantId;
+  final String? variantName;
+  final double price;
+  final int quantity;
+  final String? imageUrl;
+
+  OrderCartItem({
+    required this.productId,
+    required this.productName,
+    this.variantId,
+    this.variantName,
+    required this.price,
+    required this.quantity,
+    this.imageUrl,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'productId': productId,
+      'productName': productName,
+      'variantId': variantId,
+      'variantName': variantName,
+      'price': price,
+      'quantity': quantity,
+      'imageUrl': imageUrl,
+    };
+  }
+}

@@ -41,8 +41,8 @@ class AdminDashboardScreen extends StatelessWidget {
             label: 'Order Management',
             onTap: () {
               // TODO: Implement Order Management Screen
+              Navigator.pushNamed(context, Routes.adminOrderManagement);
 
-                  Navigator.pushNamed(context, Routes.adminCouponManagement);
 
             },
           ),
@@ -54,9 +54,7 @@ class AdminDashboardScreen extends StatelessWidget {
             label: 'User Management',
             onTap: () {
               // TODO: Implement User Management Screen
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('User Management Coming Soon')),
-              );
+
             },
           ),
 
@@ -67,9 +65,8 @@ class AdminDashboardScreen extends StatelessWidget {
             label: 'Coupon Management',
             onTap: () {
               // TODO: Implement Coupon Management Screen
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Coupon Management Coming Soon')),
-              );
+              Navigator.pushNamed(context, Routes.adminCouponManagement);
+
             },
           ),
 

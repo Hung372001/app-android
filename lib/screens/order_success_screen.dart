@@ -273,20 +273,6 @@ class OrderSuccessScreen extends StatelessWidget {
                       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     ),
                   ),
-                  ElevatedButton.icon(
-                    icon: Icon(Icons.receipt),
-                    label: Text('Xem đơn hàng'),
-                    onPressed: () {
-                      Navigator.pushReplacementNamed(
-                        context,
-                        Routes.orderDetails,
-                        arguments: order.id,
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    ),
-                  ),
                 ],
               ),
               SizedBox(height: 24),

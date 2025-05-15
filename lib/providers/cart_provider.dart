@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import '../models/order_model.dart';
 import '../models/product_model.dart';
 import '../providers/auth_provider.dart';
 
@@ -45,6 +46,17 @@ class CartProvider with ChangeNotifier {
     return _items.fold(0, (total, item) => total + item.quantity);
   }
 
+  List<OrderCartItem> getOrderCartItems() {
+    return items.map((item) => OrderCartItem(
+      productId: item.product.id,
+      productName: item.product.name,
+      variantId: item.variant.id,
+      variantName: item.variant.name,
+      price: item.variant.price,
+      quantity: item.quantity,
+      imageUrl: item.product.imageUrls.isNotEmpty ? item.product.imageUrls.first : null,
+    )).toList();
+  }
   // Add item to cart
   void addToCart({
     required Product product,
