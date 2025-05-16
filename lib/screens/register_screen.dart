@@ -27,10 +27,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _shippingAddressController = TextEditingController();
+  final _phoneController = TextEditingController(); // Thêm controller cho số điện thoại
 
   // Password visibility toggles
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+
+  // Checkbox state
+  bool _agreedToTerms = false; // Thêm trạng thái đồng ý điều khoản
 
   @override
   void dispose() {
@@ -40,6 +44,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     _shippingAddressController.dispose();
+    _phoneController.dispose(); // Giải phóng controller số điện thoại
     super.dispose();
   }
 
@@ -47,6 +52,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _register() async {
     // Validate form
     if (_formKey.currentState!.validate()) {
+      // Check if user agreed to terms
+      if (!_agreedToTerms) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Vui lòng đồng ý với điều khoản dịch vụ để tiếp tục.',
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
       // Get auth provider
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
@@ -66,7 +85,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Registration failed. Please try again.',
+              authProvider.errorMessage ?? 'Đăng ký thất bại. Vui lòng thử lại.',
               style: TextStyle(color: Colors.white),
             ),
             backgroundColor: Colors.red,
@@ -76,6 +95,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
+  // Đăng ký bằng Google
+
   @override
   Widget build(BuildContext context) {
     // Get auth provider for loading state
@@ -83,7 +104,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Register'),
+        title: Text('Đăng ký'),
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -95,7 +116,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               children: [
                 // Registration form widgets
                 Text(
-                  'Create an Account',
+                  'Tạo tài khoản mới',
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 SizedBox(height: 20),
@@ -103,7 +124,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 // Full Name TextField
                 CustomTextField(
                   controller: _fullNameController,
-                  labelText: 'Full Name',
+                  labelText: 'Họ và tên',
                   validator: Validators.validateFullName,
                 ),
                 SizedBox(height: 15),
@@ -117,10 +138,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 SizedBox(height: 15),
 
+                // Phone TextField
+
+                SizedBox(height: 15),
+
                 // Password TextField
                 CustomTextField(
                   controller: _passwordController,
-                  labelText: 'Password',
+                  labelText: 'Mật khẩu',
                   obscureText: _obscurePassword,
                   validator: Validators.validatePassword,
                   suffixIcon: IconButton(
@@ -141,7 +166,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 // Confirm Password TextField
                 CustomTextField(
                   controller: _confirmPasswordController,
-                  labelText: 'Confirm Password',
+                  labelText: 'Xác nhận mật khẩu',
                   obscureText: _obscureConfirmPassword,
                   validator: (value) => Validators.validateConfirmPassword(
                       _passwordController.text,
@@ -165,17 +190,64 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 // Shipping Address TextField
                 CustomTextField(
                   controller: _shippingAddressController,
-                  labelText: 'Shipping Address',
+                  labelText: 'Địa chỉ giao hàng',
                   validator: Validators.validateShippingAddress,
+                ),
+                SizedBox(height: 20),
+
+                // Terms and Conditions Checkbox
+                Row(
+                  children: [
+                    Checkbox(
+                      value: _agreedToTerms,
+                      onChanged: (value) {
+                        setState(() {
+                          _agreedToTerms = value ?? false;
+                        });
+                      },
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _agreedToTerms = !_agreedToTerms;
+                          });
+                        },
+                        child: Text(
+                          'Tôi đồng ý với điều khoản dịch vụ và chính sách bảo mật',
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 SizedBox(height: 20),
 
                 // Register Button
                 PrimaryButton(
-                  text: 'Register',
+                  text: 'Đăng ký',
                   isLoading: authProvider.isLoading,
                   onPressed: _register,
                 ),
+
+                SizedBox(height: 20),
+
+                // Divider with "Or" text
+                Row(
+                  children: [
+                    Expanded(child: Divider()),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text('Hoặc'),
+                    ),
+                    Expanded(child: Divider()),
+                  ],
+                ),
+
+                SizedBox(height: 20),
+
+                // Google Sign In Button
+
               ],
             ),
           ),

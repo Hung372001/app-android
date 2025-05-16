@@ -53,8 +53,7 @@ class AdminDashboardScreen extends StatelessWidget {
             icon: Icons.people,
             label: 'User Management',
             onTap: () {
-              // TODO: Implement User Management Screen
-
+                Navigator.pushNamed(context, Routes.adminUserManagement);
             },
           ),
 

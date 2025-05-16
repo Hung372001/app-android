@@ -34,9 +34,45 @@ class OrderHistoryResult {
 class OrderProvider with ChangeNotifier {
   final AuthProvider _authProvider;
   final String baseUrl = '${AppConstants.baseUrl}/orders';
+  List<Order> _orders = [];
+  bool _isLoading = false;
+  bool _hasMoreOrders = true;
+  int _currentPage = 1;
+  String? _errorMessage;
+
+  // Getters
+  List<Order> get orders => _orders;
+  bool get isLoading => _isLoading;
+  bool get hasMoreOrders => _hasMoreOrders;
+  String? get errorMessage => _errorMessage;
 
   OrderProvider(this._authProvider);
 
+
+
+
+
+  static Future<bool> updateOrderStatus(String orderId, String newStatus, ) async {
+    try {
+      final response = await http.patch(
+        Uri.parse('${AppConstants.baseUrl}/orders/$orderId/status'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({'status': newStatus}),
+      );
+
+      print('Response status:${AppConstants.baseUrl}/orders/$orderId/status');
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw Exception('Failed to update order status: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error updating order status: $e');
+    }
+  }
   // Create a new order
   Future<Order> createOrder({
     required String customerName,
@@ -114,33 +150,62 @@ class OrderProvider with ChangeNotifier {
     }
   }
 
-  Future<void> fetchOrder() async {
-
-
+  Future<void> fetchOrders({
+    String? searchQuery,
+    String? statusFilter,
+    DateTime? startDate,
+    DateTime? endDate,
+    int page = 1,
+    int limit = 10,
+  }) async {
     notifyListeners();
-
     try {
+      // Prepare query parameters
+
+
+      // Get auth token
+
+
+      // Make API request
       final response = await http.get(
-        Uri.parse(baseUrl)
-
+        Uri.parse(baseUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
       );
-
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-
-        final List<dynamic> couponList = responseData['orders'];
-        final List<Order> fetchedCoupons = couponList
-            .map((coupon) => Order.fromJson(coupon))
-            .toList();
-
+        final List<dynamic> orderList = responseData['orders'];
+        // If first page, replace the list, otherwise add to i
       } else {
-
+        _errorMessage = 'Failed to load orders. Please try again.';
       }
     } catch (e) {
+      _errorMessage = 'Error: ${e.toString()}';
     } finally {
+      _isLoading = false;
       notifyListeners();
     }
   }
+
+  // Load more orders for pagination
+  Future<void> loadMoreOrders({
+    String? searchQuery,
+    String? statusFilter,
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
+    if (!_hasMoreOrders || _isLoading) return;
+
+    await fetchOrders(
+      page: _currentPage + 1,
+      searchQuery: searchQuery,
+      statusFilter: statusFilter,
+      startDate: startDate,
+      endDate: endDate,
+    );
+  }
+
   // Validate a coupon code
   Future<CouponValidationResult> validateCoupon(String couponCode, double orderAmount) async {
     try {
@@ -215,6 +280,7 @@ class OrderProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
+        print('Response data: $responseData');
         final List<dynamic> ordersData = responseData['data'];
 
 print('Response data: $responseData');

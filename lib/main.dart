@@ -2,6 +2,8 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:untitled/providers/admin_user_provider.dart';
+import 'package:untitled/screens/admin_user_management_screen.dart';
 
 // Import Providers
 import './providers/auth_provider.dart';
@@ -115,6 +117,13 @@ void main() {
           update: (context, authProvider, previousOrderProvider) =>
               OrderProvider(authProvider),
         ),
+        ChangeNotifierProxyProvider<AuthProvider, AdminUserProvider>(
+          create: (context) => AdminUserProvider(
+              Provider.of<AuthProvider>(context, listen: false)
+          ),
+          update: (context, authProvider, previousOrderProvider) =>
+              AdminUserProvider(authProvider),
+        ),
       ],
       child: MyApp(),
     ),
@@ -156,6 +165,7 @@ class MyApp extends StatelessWidget {
         Routes.adminProductAdd: (context) => adminRouteWrapper(AdminProductManagementScreen()),
         Routes.adminOrderManagement: (context) => adminRouteWrapper(AdminOrderManagementScreen()),
         Routes.adminCouponManagement: (context) => adminRouteWrapper(AdminCouponManagementScreen()),
+        Routes.adminUserManagement: (context) => adminRouteWrapper(AdminUserManagementScreen()),
 
         // Dynamic route for product details
         Routes.productDetails: (context) => ProductDetailsScreen(

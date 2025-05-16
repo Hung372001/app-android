@@ -76,7 +76,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Lịch sử đơn hàng'),
+        title: Text('Quản lý đơn hàng'),
       ),
       body: Column(
         children: [

@@ -7,7 +7,7 @@ import '../providers/auth_provider.dart';
 import '../utils/constants.dart';
 
 class AdminOrderProvider with ChangeNotifier {
-  final String baseUrl = '${AppConstants.baseUrl}/admin/orders';
+  final String baseUrl = '${AppConstants.baseUrl}/orders';
   final AuthProvider _authProvider;
 
   AdminOrderProvider(this._authProvider);
@@ -77,30 +77,29 @@ class AdminOrderProvider with ChangeNotifier {
 
       // Make API request
       final response = await http.get(
-        Uri.parse(baseUrl).replace(queryParameters: queryParams),
+        Uri.parse(baseUrl),
         headers: {
           'Authorization': 'Bearer $token',
         },
       );
 
+      print('Response status: ${response.statusCode }');
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
 
         final List<dynamic> orderList = responseData['orders'];
+        print('Response status 3: ${orderList}');
+
         final List<Order> fetchedOrders = orderList
             .map((order) => Order.fromJson(order))
             .toList();
+        print('Response status 3: ${fetchedOrders}');
 
         // If first page, replace the list, otherwise add to it
-        if (page == 1) {
-          _orders = fetchedOrders;
-        } else {
-          _orders.addAll(fetchedOrders);
-        }
 
         // Check if there are more orders to load
-        final int totalOrders = responseData['totalOrders'] ?? 0;
-        _hasMoreOrders = totalOrders > _orders.length;
+        // final int totalOrders = responseData['totalOrders'] ?? 0;
+        // _hasMoreOrders = totalOrders > _orders.length;
         _currentPage = page;
         _errorMessage = null;
       } else {

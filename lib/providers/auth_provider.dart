@@ -2,42 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../utils/constants.dart';
-
-class User {
-  final String id;
-  final String fullName;
-  final String email;
-  final String role;
-  final String shippingAddress;
-
-  User({
-    required this.id,
-    required this.fullName,
-    required this.email,
-    required this.role,
-    this.shippingAddress = '',
-  });
-
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      id: json['id'] ?? '',
-      fullName: json['fullName'] ?? '',
-      email: json['email'] ?? '',
-      role: json['role'] ?? 'customer',
-      shippingAddress: json['shippingAddress'] ?? '',
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'fullName': fullName,
-      'email': email,
-      'role': role,
-      'shippingAddress': shippingAddress,
-    };
-  }
-}
+import '../models/user_model.dart';
 
 class AuthProvider with ChangeNotifier {
   User? _currentUser;
@@ -45,11 +10,13 @@ class AuthProvider with ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
 
+  // Google SignIn instance
+
   // Getters
   User? get currentUser => _currentUser;
   String? get authToken => _authToken;
   bool get isLoggedIn => _currentUser != null;
-  bool get isAdmin => _currentUser != null && _currentUser!.role == 'admin';
+  bool get isAdmin => _currentUser != null && _currentUser!.isAdmin; // Sử dụng getter isAdmin từ model User
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
@@ -193,12 +160,16 @@ class AuthProvider with ChangeNotifier {
       return false;
     }
   }
+
   // Logout method
   void logout() {
     _currentUser = null;
     _authToken = null;
     _isLoading = false;
     _errorMessage = null;
+
+    // Đăng xuất khỏi Google nếu đã đăng nhập
+
     notifyListeners();
   }
 
@@ -208,6 +179,7 @@ class AuthProvider with ChangeNotifier {
     required String email,
     required String password,
     required String shippingAddress,
+    String? phone, // Vẫn nhận phone từ tham số nhưng không lưu
   }) async {
     _isLoading = true;
     _errorMessage = null;
@@ -222,6 +194,7 @@ class AuthProvider with ChangeNotifier {
           'email': email,
           'password': password,
           'shippingAddress': shippingAddress,
+          // Không gửi phone vì model không có
         }),
       );
 
@@ -238,13 +211,19 @@ class AuthProvider with ChangeNotifier {
         notifyListeners();
         return true;
       } else {
-        _errorMessage = 'Registration failed';
+        // Xử lý lỗi chi tiết từ API
+        try {
+          final responseData = json.decode(response.body);
+          _errorMessage = responseData['message'] ?? 'Đăng ký thất bại';
+        } catch (e) {
+          _errorMessage = 'Đăng ký thất bại';
+        }
         notifyListeners();
         return false;
       }
     } catch (e) {
       _isLoading = false;
-      _errorMessage = 'Registration error: ${e.toString()}';
+      _errorMessage = 'Lỗi đăng ký: ${e.toString()}';
       notifyListeners();
       return false;
     }
@@ -281,4 +260,6 @@ class AuthProvider with ChangeNotifier {
       return false;
     }
   }
+
+
 }
