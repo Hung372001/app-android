@@ -313,8 +313,9 @@ print('Response data: $responseData');
 
       if (response.statusCode == 200) {
         // Parse successful response
-        final responseData = json.decode(response.body);
-        return Order.fromJson(responseData['order']);
+        final responseData = json.decode(response.body)['data'];
+        print('Response data: $responseData["data"]');
+        return Order.fromJson(responseData);
       } else {
         // Handle API error
         final errorData = json.decode(response.body);

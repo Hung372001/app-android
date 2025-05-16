@@ -244,7 +244,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                     order.paymentMethod,
                   ),
                   _buildInfoRow(
-                    'Trạng thái thanh toán:',
+                    'Trạng thái giao hàng:',
                     order.paymentStatus,
                     valueColor: order.paymentStatus == 'Paid'
                         ? Colors.green
@@ -278,7 +278,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                   Divider(),
                   SizedBox(height: 8),
                   Text(
-                    order.customerName,
+                    order.shippingAddress,
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 4),
@@ -616,7 +616,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   // Helper method to get status description
   String _getStatusDescription(String status) {
     switch (status) {
-      case 'Pending':
+      case 'pending':
         return 'Đơn hàng của bạn đang chờ xác nhận';
       case 'Processing':
         return 'Đơn hàng của bạn đang được xử lý';
