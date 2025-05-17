@@ -9,6 +9,7 @@ import '../models/order_model.dart';
 import '../providers/auth_provider.dart';
 import '../providers/order_provider.dart';
 import '../utils/routes.dart';
+import '../widgets/product_card.dart';
 
 class OrderHistoryScreen extends StatefulWidget {
   @override
@@ -265,7 +266,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Tổng tiền: ${order.total.toStringAsFixed(0)}đ',
+                    'Tổng tiền: ${format.format(order.total)}đ',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,

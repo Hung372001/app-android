@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../models/product_model.dart';
 import '../providers/cart_provider.dart';
 import '../utils/routes.dart';
 
+final formatter = NumberFormat('#,##0', 'vi_VN');
 class CartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -191,7 +193,7 @@ class CartScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  '${cartItem.totalPrice.toStringAsFixed(0)}đ',
+                  '${formatter.format(cartItem.totalPrice)}',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                   ),
@@ -232,7 +234,7 @@ class CartScreen extends StatelessWidget {
             children: [
               Text('Subtotal'),
               Text(
-                '${cartProvider.totalAmount.toStringAsFixed(0)}đ',
+                '${ formatter.format(cartProvider.totalAmount)}',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ],
@@ -243,7 +245,7 @@ class CartScreen extends StatelessWidget {
             children: [
               Text('Shipping Fee'),
               Text(
-                '${cartProvider.calculateShippingFee().toStringAsFixed(0)}đ',
+                '${formatter.format(cartProvider.calculateShippingFee())}đ',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ],
@@ -257,7 +259,7 @@ class CartScreen extends StatelessWidget {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               Text(
-                '${cartProvider.calculateTotalWithShipping().toStringAsFixed(0)}đ',
+                '${formatter.format( cartProvider.calculateTotalWithShipping())}',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,

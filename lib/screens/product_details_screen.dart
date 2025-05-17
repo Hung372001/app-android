@@ -1,6 +1,7 @@
 // Chi tiết sản phẩm có thêm liên kết đến danh mục
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:untitled/widgets/product_card.dart';
 
 import '../models/product_model.dart';
 import '../providers/product_provider.dart';
@@ -220,7 +221,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
                       // Price
                       Text(
-                        'Price: ${_selectedVariant.price.toStringAsFixed(0)}đ',
+                        'Price: ${format.format(product.price)}',
                         style: Theme.of(context).textTheme.headlineLarge,
                       ),
 

@@ -11,6 +11,7 @@ import '../utils/routes.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/primary_button.dart';
 
+final formatter = NumberFormat('#,##0', 'vi_VN');
 class CheckoutScreen extends StatefulWidget {
   @override
   _CheckoutScreenState createState() => _CheckoutScreenState();
@@ -345,7 +346,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       Padding(
                         padding: const EdgeInsets.only(top: 8.0),
                         child: Text(
-                          'Giảm ${_discountAmount.toStringAsFixed(0)}đ',
+                          'Giảm ${formatter.format(_discountAmount.toStringAsFixed(0))}đ',
                           style: TextStyle(
                             color: Colors.green,
                             fontWeight: FontWeight.bold,
@@ -386,7 +387,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     children: [
                       Text('Tạm tính:'),
                       Text(
-                        '${subtotal.toStringAsFixed(0)}đ',
+                        '${formatter.format(subtotal.toStringAsFixed(0))}đ',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ],
@@ -427,7 +428,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        '${total.toStringAsFixed(0)}đ',
+                        '${formatter.format(total.toStringAsFixed(0))}đ',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
@@ -592,11 +593,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      '${item.variant.price.toStringAsFixed(0)}đ x ${item.quantity}',
+                      '${formatter.format(item.variant.price)}đ x ${item.quantity}',
                       style: TextStyle(color: Colors.grey.shade700),
                     ),
                     Text(
-                      '${item.totalPrice.toStringAsFixed(0)}đ',
+                      '${formatter.format(item.totalPrice)}đ',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ],

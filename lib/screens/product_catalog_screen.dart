@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../models/product_model.dart';
@@ -7,6 +8,7 @@ import '../providers/product_provider.dart';
 import '../providers/cart_provider.dart';
 import '../utils/routes.dart';
 
+final formatter = NumberFormat('#,##0', 'vi_VN');
 class ProductCatalogScreen extends StatefulWidget {
   @override
   _ProductCatalogScreenState createState() => _ProductCatalogScreenState();
@@ -505,7 +507,7 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
                   children: [
                     // Price
                     Text(
-                      '${product.price.toStringAsFixed(0)}đ',
+                      '${formatter.format(product.price)}đ',
                       style: TextStyle(
                         color: Theme.of(context).primaryColor,
                         fontWeight: FontWeight.bold,
